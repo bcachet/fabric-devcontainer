@@ -28,11 +28,29 @@ ADD --chown=vscode:vscode --chmod=0755 \
     /usr/bin/fabric
 
 RUN mkdir -p /home/vscode/.ollama && chown -R vscode:vscode /home/vscode/.ollama
-VOLUME /home/vscode/.ollama
+# VOLUME /home/vscode/.ollama
 USER vscode
 
-COPY <<EOF /home/vscode/.bash_aliases
-# function fabric() {
-#     /usr/bin/fabric --
-# }
+ARG MODEL
+ENV MODEL=${MODEL:-llama3.2:latest}
+
+RUN <<EOF
+trap "service ollama stop" EXIT
+service ollama start
+ollama pull ${MODEL}
+EOF
+
+COPY --chown=vscode:vscode <<EOF /home/vscode/.config/fabric/.env
+DEFAULT_VENDOR=Ollama
+DEFAULT_MODEL=${MODEL}
+PATTERNS_LOADER_GIT_REPO_URL=https://github.com/danielmiessler/fabric.git
+PATTERNS_LOADER_GIT_REPO_PATTERNS_FOLDER=patterns
+OLLAMA_API_URL=http://localhost:11434
+EOF
+
+RUN <<EOF
+git clone -n --depth=1 --filter=tree:0 https://github.com/danielmiessler/fabric.git /tmp/fabric
+(cd /tmp/fabric && git sparse-checkout set --no-cone /patterns && git checkout)
+cp -r /tmp/fabric/patterns /home/vscode/.config/fabric/
+rm -rf /tmp/fabric
 EOF
