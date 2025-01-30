@@ -1,0 +1,8 @@
+*
+
+!.gitignore
+!README.md
+
+!.devcontainer/
+!.devcontainer/Dockerfile*
+!.devcontainer/*.json
