@@ -7,8 +7,7 @@
 		"dockerfile": "Dockerfile",
 		"args": {
 			"OLLAMA_VERSION": "0.5.7",
-			"FABRIC_VERSION": "1.4.131",
-			"MODEL": "llama3.2:latest"
+			"FABRIC_VERSION": "1.4.131"
 		}
 	},
 
@@ -22,7 +21,7 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
-	"postAttachCommand": "service ollama start && ollama pull ${MODEL}",
+	"postAttachCommand": "service ollama start",
 
 	// Configure tool-specific properties.
 	// "customizations": {},
